@@ -28,7 +28,14 @@ export default function RunPromptPage({ params }: { params: Promise<{ id: string
     },
   });
 
-  const extractedVariables = prompt?.current_version_data?.variables || [];
+  // Extract variables live from the prompt body so we always see all {{variable}} placeholders
+  const promptBody =
+    (prompt?.current_version_data as any)?.body ??
+    (prompt?.current_version_data as any)?.content ??
+    "";
+  const extractedVariables: string[] = promptBody
+    ? Array.from(new Set([...promptBody.matchAll(/\{\{([^}]+)\}\}/g)].map((m: RegExpMatchArray) => m[1].trim())))
+    : [];
 
   const handleRun = async () => {
     setIsRunning(true);
@@ -139,7 +146,7 @@ export default function RunPromptPage({ params }: { params: Promise<{ id: string
             <div className="rounded-lg bg-white p-6 shadow">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Prompt Preview</h2>
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 font-mono text-sm text-gray-900 whitespace-pre-wrap">
-                {prompt?.current_version_data?.content || "No content"}
+                {promptBody || "No content"}
               </div>
             </div>
 

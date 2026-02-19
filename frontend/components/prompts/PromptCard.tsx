@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Prompt } from "@/types";
 import {
   PlayIcon,
+  PencilIcon,
   DocumentDuplicateIcon,
   ArchiveBoxIcon,
   HeartIcon,
@@ -16,6 +17,7 @@ import { formatDistanceToNow } from "date-fns";
 interface PromptCardProps {
   prompt: Prompt;
   onRun?: (id: number) => void;
+  onEdit?: (id: number) => void;
   onDuplicate?: (id: number) => void;
   onArchive?: (id: number) => void;
   onToggleFavorite?: (id: number) => void;
@@ -30,6 +32,7 @@ const statusColors = {
 export default function PromptCard({
   prompt,
   onRun,
+  onEdit,
   onDuplicate,
   onArchive,
   onToggleFavorite,
@@ -107,6 +110,13 @@ export default function PromptCard({
               >
                 <PlayIcon className="mr-1 h-4 w-4" />
                 Run
+              </button>
+              <button
+                onClick={() => onEdit?.(prompt.id)}
+                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-2 py-1.5 text-xs text-gray-700 hover:bg-gray-50"
+                title="Edit"
+              >
+                <PencilIcon className="h-4 w-4" />
               </button>
               <button
                 onClick={() => onDuplicate?.(prompt.id)}

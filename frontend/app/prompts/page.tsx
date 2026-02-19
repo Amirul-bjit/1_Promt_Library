@@ -39,6 +39,10 @@ export default function PromptsPage() {
     router.push(`/prompts/${id}/run`);
   };
 
+  const handleEdit = (id: number) => {
+    router.push(`/prompts/${id}/edit`);
+  };
+
   const handleDuplicate = async (id: number) => {
     // TODO: Implement duplicate
     console.log("Duplicate prompt", id);
@@ -142,6 +146,7 @@ export default function PromptsPage() {
                 key={prompt.id}
                 prompt={prompt}
                 onRun={handleRun}
+                onEdit={handleEdit}
                 onDuplicate={handleDuplicate}
                 onArchive={handleArchive}
                 onToggleFavorite={handleToggleFavorite}

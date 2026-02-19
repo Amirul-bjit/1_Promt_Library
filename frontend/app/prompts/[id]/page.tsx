@@ -138,7 +138,12 @@ export default function PromptDetailPage({ params }: { params: Promise<{ id: str
                           <span className="text-gray-600">{execution.model}</span>
                         </div>
                         <div className="mt-1 text-xs text-gray-500">
-                          {formatDistanceToNow(new Date(execution.created_at), { addSuffix: true })}
+                          {(() => {
+                            const ts = (execution as any).executed_at ?? (execution as any).created_at;
+                            if (!ts) return "Unknown time";
+                            const d = new Date(ts);
+                            return isNaN(d.getTime()) ? "Unknown time" : formatDistanceToNow(d, { addSuffix: true });
+                          })()}
                         </div>
                       </div>
                       {execution.cost && (

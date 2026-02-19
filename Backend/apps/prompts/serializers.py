@@ -157,8 +157,8 @@ class PromptTemplateCreateSerializer(serializers.ModelSerializer):
         """Extract {{variable}} patterns from content"""
         if not content:
             return []
-        pattern = r'\{\{(\w+)\}\}'
-        variables = re.findall(pattern, content)
+        pattern = r'\{\{([^}]+)\}\}'
+        variables = [v.strip() for v in re.findall(pattern, content)]
         return list(set(variables))  # Remove duplicates
     
     def _get_or_create_category(self, category_value):
@@ -256,8 +256,8 @@ class PromptVersionCreateSerializer(serializers.ModelSerializer):
         # Auto-extract variables from body if not provided
         body = validated_data.get('body', '')
         if not validated_data.get('variables'):
-            pattern = r'\{\{(\w+)\}\}'
-            validated_data['variables'] = list(set(re.findall(pattern, body)))
+            pattern = r'\{\{([^}]+)\}\}'
+            validated_data['variables'] = list(set(v.strip() for v in re.findall(pattern, body)))
         # Auto-increment version number
         last_version = template.versions.order_by('-version_number').first()
         version_number = (last_version.version_number + 1) if last_version else 1
