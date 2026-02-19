@@ -21,9 +21,9 @@ interface Provider {
 }
 
 const PROVIDER_ENV_KEYS: Record<string, string> = {
-  openai: "OPENAI_API_KEY",
-  anthropic: "ANTHROPIC_API_KEY",
-  mistral: "MISTRAL_API_KEY",
+  OPENAI: "OPENAI_API_KEY",
+  ANTHROPIC: "ANTHROPIC_API_KEY",
+  MISTRAL: "MISTRAL_API_KEY",
 };
 
 export default function ProvidersSettingsPage() {
@@ -36,7 +36,7 @@ export default function ProvidersSettingsPage() {
 
   const fetchProviders = async () => {
     try {
-      const response = await api.get("/execution/providers/");
+      const response = await api.get("/executions/providers/");
       const data: { id: string; name: string; is_configured: boolean }[] =
         response.data;
       setProviders(
@@ -66,7 +66,7 @@ export default function ProvidersSettingsPage() {
     updateProvider(provider.id, { testStatus: "testing", testMessage: "" });
 
     try {
-      const response = await api.post("/execution/test-provider/", {
+      const response = await api.post("/executions/test-provider/", {
         provider: provider.id,
         api_key: provider.apiKey,
       });

@@ -13,7 +13,7 @@ from .models import Category, Tag, PromptTemplate, PromptVersion, PromptVariant,
 from .serializers import (
     CategorySerializer, TagSerializer, PromptTemplateSerializer, PromptTemplateDetailSerializer,
     PromptVersionSerializer, PromptVariantSerializer, PromptVersionCreateSerializer,
-    PromptTemplateCreateSerializer, APIKeySerializer
+    PromptVariantCreateSerializer, PromptTemplateCreateSerializer, APIKeySerializer
 )
 
 
@@ -182,10 +182,14 @@ class PromptVersionViewSet(viewsets.ModelViewSet):
     ViewSet for managing prompt versions
     """
     queryset = PromptVersion.objects.all()
-    serializer_class = PromptVersionSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ['version_number', 'created_at']
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return PromptVersionCreateSerializer
+        return PromptVersionSerializer
 
     def get_queryset(self):
         queryset = super().get_queryset()

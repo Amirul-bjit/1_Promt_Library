@@ -65,7 +65,7 @@ export default function ProviderModelSelector({
               onModelChange(newProvider.models[0].id);
             }
           }}
-          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
         >
           {Object.entries(PROVIDERS).map(([key, value]) => (
             <option key={key} value={key}>
@@ -83,7 +83,7 @@ export default function ProviderModelSelector({
         <select
           value={model}
           onChange={(e) => onModelChange(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
         >
           {availableModels.map((m) => (
             <option key={m.id} value={m.id}>

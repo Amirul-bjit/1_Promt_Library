@@ -127,7 +127,7 @@ export default function RunPromptPage({ params }: { params: Promise<{ id: string
                         onChange={(e) =>
                           setVariables({ ...variables, [variable]: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
                         placeholder={`Enter ${variable}...`}
                       />
                     </div>
@@ -138,7 +138,7 @@ export default function RunPromptPage({ params }: { params: Promise<{ id: string
 
             <div className="rounded-lg bg-white p-6 shadow">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Prompt Preview</h2>
-              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 font-mono text-sm whitespace-pre-wrap">
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 font-mono text-sm text-gray-900 whitespace-pre-wrap">
                 {prompt?.current_version_data?.content || "No content"}
               </div>
             </div>
@@ -181,7 +181,7 @@ export default function RunPromptPage({ params }: { params: Promise<{ id: string
 
                   {execution.status === "COMPLETED" && (
                     <>
-                      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 whitespace-pre-wrap text-sm">
+                      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 whitespace-pre-wrap text-sm text-gray-900">
                         {execution.response}
                       </div>
 

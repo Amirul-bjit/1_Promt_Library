@@ -76,6 +76,50 @@ class PromptTemplateSerializer(serializers.ModelSerializer):
             return PromptVersionSerializer(version).data
         return None
 
+    def _resolve_category_id(self, value):
+        """Return a Category pk integer from an ID or name string, or None."""
+        if value is None or value == '':
+            return None
+        try:
+            return int(value)  # already an ID
+        except (ValueError, TypeError):
+            pass
+        # treat as name
+        cat, _ = Category.objects.get_or_create(name=str(value).strip())
+        return cat.pk
+
+    def _resolve_tag_ids(self, values):
+        """Return a list of Tag pk integers from IDs or name strings."""
+        if not values:
+            return []
+        result = []
+        for v in values:
+            v_str = str(v).strip()
+            if not v_str:
+                continue
+            try:
+                result.append(int(v_str))
+            except (ValueError, TypeError):
+                tag, _ = Tag.objects.get_or_create(name=v_str)
+                result.append(tag.pk)
+        return result
+
+    def to_internal_value(self, data):
+        """Resolve category/tags names before standard DRF validation."""
+        data = data.copy() if hasattr(data, 'copy') else dict(data)
+        if 'category' in data:
+            data['category'] = self._resolve_category_id(data['category'])
+        if 'tags' in data:
+            raw = data['tags']
+            if isinstance(raw, str):
+                raw = [t.strip() for t in raw.split(',') if t.strip()]
+            data['tags'] = self._resolve_tag_ids(raw)
+        if 'status' in data and data['status']:
+            data['status'] = str(data['status']).lower()
+        return super().to_internal_value(data)
+
+
+
 
 class PromptTemplateDetailSerializer(PromptTemplateSerializer):
     versions = PromptVersionSerializer(many=True, read_only=True)
@@ -195,12 +239,25 @@ class PromptTemplateCreateSerializer(serializers.ModelSerializer):
 
 
 class PromptVersionCreateSerializer(serializers.ModelSerializer):
+    variables = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        allow_empty=True,
+        default=list,
+    )
+    change_note = serializers.CharField(required=False, allow_blank=True, default="")
+
     class Meta:
         model = PromptVersion
         fields = ['template', 'body', 'variables', 'change_note']
 
     def create(self, validated_data):
         template = validated_data['template']
+        # Auto-extract variables from body if not provided
+        body = validated_data.get('body', '')
+        if not validated_data.get('variables'):
+            pattern = r'\{\{(\w+)\}\}'
+            validated_data['variables'] = list(set(re.findall(pattern, body)))
         # Auto-increment version number
         last_version = template.versions.order_by('-version_number').first()
         version_number = (last_version.version_number + 1) if last_version else 1
