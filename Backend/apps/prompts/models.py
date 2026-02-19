@@ -1,3 +1,5 @@
+import secrets
+import hashlib
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -51,6 +53,29 @@ class PromptTemplate(models.Model):
     @property
     def current_version(self):
         return self.versions.order_by("-version_number").first()
+
+
+class APIKey(models.Model):
+    """Per-user API key for programmatic access. Only the hash is stored."""
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="api_keys"
+    )
+    name = models.CharField(max_length=100)
+    key_prefix = models.CharField(max_length=8)       # first 8 chars shown in UI
+    key_hash = models.CharField(max_length=64, unique=True)  # SHA-256
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.key_prefix}…)"
+
+    @classmethod
+    def generate_key(cls):
+        """Return (prefix, key_hash, raw_key). Call before saving."""
+        raw = secrets.token_urlsafe(32)
+        prefix = raw[:8]
+        key_hash = hashlib.sha256(raw.encode()).hexdigest()
+        return prefix, key_hash, raw
 
 
 class PromptVersion(models.Model):

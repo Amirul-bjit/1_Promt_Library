@@ -3,7 +3,20 @@ Serializers for prompts
 """
 import re
 from rest_framework import serializers
-from .models import Category, Tag, PromptTemplate, PromptVersion, PromptVariant
+from .models import Category, Tag, PromptTemplate, PromptVersion, PromptVariant, APIKey
+
+
+class APIKeySerializer(serializers.ModelSerializer):
+    """On creation the response includes `raw_key` (shown once). On list it is None."""
+    raw_key = serializers.SerializerMethodField()
+
+    class Meta:
+        model = APIKey
+        fields = ['id', 'name', 'key_prefix', 'raw_key', 'created_at', 'last_used_at']
+        read_only_fields = ['id', 'key_prefix', 'raw_key', 'created_at', 'last_used_at']
+
+    def get_raw_key(self, obj):
+        return getattr(obj, '_raw_key', None)
 
 
 class CategorySerializer(serializers.ModelSerializer):
