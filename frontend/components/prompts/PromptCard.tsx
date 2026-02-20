@@ -12,7 +12,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolidIcon } from "@heroicons/react/24/solid";
 import { clsx } from "clsx";
-import { formatDistanceToNow } from "date-fns";
+import { safeFormatDistanceToNow } from "@/lib/dateUtils";
 
 interface PromptCardProps {
   prompt: Prompt;
@@ -98,7 +98,7 @@ export default function PromptCard({
       <div className="flex items-center justify-between border-t border-gray-100 pt-4">
         <div className="flex items-center text-xs text-gray-500">
           <ClockIcon className="mr-1 h-4 w-4" />
-          {formatDistanceToNow(new Date(prompt.updated_at), { addSuffix: true })}
+          {safeFormatDistanceToNow(prompt.updated_at)}
         </div>
         <div className="flex items-center space-x-2">
           {prompt.status !== "ARCHIVED" && (

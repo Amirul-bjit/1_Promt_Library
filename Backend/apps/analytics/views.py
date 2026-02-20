@@ -19,7 +19,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
     """
     permission_classes = [IsAuthenticated]
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], url_path='dashboard_metrics')
     def dashboard(self, request):
         """
         Get dashboard metrics for the current user

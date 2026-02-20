@@ -34,15 +34,15 @@ class AuditMiddleware(MiddlewareMixin):
         """
         audit_data = request._audit_data
         action_map = {
-            'POST': 'CREATE',
-            'PUT': 'UPDATE',
-            'PATCH': 'UPDATE',
-            'DELETE': 'DELETE',
+            'POST': AuditLog.ACTION_CREATE,
+            'PUT': AuditLog.ACTION_UPDATE,
+            'PATCH': AuditLog.ACTION_UPDATE,
+            'DELETE': AuditLog.ACTION_DELETE,
         }
         
         AuditLog.objects.create(
             user=audit_data['user'],
-            action=action_map.get(audit_data['method'], 'VIEW'),
+            action=action_map.get(audit_data['method'], AuditLog.ACTION_CREATE),
             ip_address=audit_data['ip_address'],
             user_agent=audit_data['user_agent'],
             extra={

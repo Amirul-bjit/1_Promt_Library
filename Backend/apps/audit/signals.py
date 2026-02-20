@@ -16,8 +16,9 @@ def create_audit_log(instance, action, changes=None):
         action=action,
         content_type=content_type,
         object_id=instance.pk,
+        object_repr=str(instance),
         changes=changes or {},
-        metadata={
+        extra={
             'model': instance.__class__.__name__,
         }
     )

@@ -19,4 +19,5 @@ urlpatterns = [
     path('api/prompts/', include('apps.prompts.urls')),
     path('api/executions/', include('apps.execution.urls')),
     path('api/analytics/', include('apps.analytics.urls')),
+    path('api/audit/', include('apps.audit.urls')),
 ]

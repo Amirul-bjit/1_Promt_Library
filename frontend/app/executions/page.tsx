@@ -6,7 +6,7 @@ import { MagnifyingGlassIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { Execution } from "@/types";
-import { formatDistanceToNow } from "date-fns";
+import { safeFormatDistanceToNow } from "@/lib/dateUtils";
 
 export default function ExecutionsPage() {
   const router = useRouter();
@@ -172,7 +172,7 @@ export default function ExecutionsPage() {
                         {execution.duration_ms ? `${execution.duration_ms}ms` : "-"}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {formatDistanceToNow(new Date(execution.created_at), { addSuffix: true })}
+                        {safeFormatDistanceToNow(execution.created_at)}
                       </td>
                     </tr>
                   ))}

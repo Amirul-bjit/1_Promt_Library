@@ -54,3 +54,36 @@ export interface DashboardMetrics {
   avg_duration_ms: number;
   provider_breakdown: Record<string, number>;
 }
+
+export type AuditAction =
+  | "create"
+  | "update"
+  | "delete"
+  | "restore"
+  | "archive"
+  | "execute"
+  | "export"
+  | "import"
+  | "login"
+  | "logout";
+
+export interface AuditLog {
+  id: number;
+  user_username: string | null;
+  content_type_name: string | null;
+  object_id: number | null;
+  object_repr: string;
+  action: AuditAction;
+  changes: Record<string, { old: unknown; new: unknown }>;
+  extra: Record<string, unknown>;
+  ip_address: string | null;
+  user_agent: string;
+  timestamp: string;
+}
+
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}

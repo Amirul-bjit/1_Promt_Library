@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import Sidebar from "@/components/layout/Sidebar";
@@ -13,18 +13,24 @@ export default function AuthenticatedLayout({
   const { isAuthenticated } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
 
   // List of paths that don't need authentication
   const publicPaths = ["/", "/login", "/register"];
 
   useEffect(() => {
-    if (!isAuthenticated && !publicPaths.includes(pathname || "")) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !isAuthenticated && !publicPaths.includes(pathname || "")) {
       router.push("/login");
     }
-  }, [isAuthenticated, pathname, router]);
+  }, [isAuthenticated, pathname, router, mounted]);
 
-  // Don't show sidebar on public pages
-  if (publicPaths.includes(pathname || "") || !isAuthenticated) {
+  // Before client mount, render children only — matches the server render
+  // and avoids the hydration mismatch from store rehydration.
+  if (!mounted || publicPaths.includes(pathname || "") || !isAuthenticated) {
     return <>{children}</>;
   }
 

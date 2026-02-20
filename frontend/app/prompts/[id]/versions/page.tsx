@@ -6,7 +6,7 @@ import { ArrowLeftIcon, EyeIcon, ArrowUturnLeftIcon } from "@heroicons/react/24/
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { PromptVersion } from "@/types";
-import { formatDistanceToNow } from "date-fns";
+import { safeFormatDistanceToNow } from "@/lib/dateUtils";
 
 export default function VersionHistoryPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -84,7 +84,7 @@ export default function VersionHistoryPage({ params }: { params: Promise<{ id: s
                     </div>
                     <p className="mt-1 text-sm text-gray-600">
                       By {version.created_by_username} •{" "}
-                      {formatDistanceToNow(new Date(version.created_at), { addSuffix: true })}
+                      {safeFormatDistanceToNow(version.created_at)}
                     </p>
                     {version.change_notes && (
                       <p className="mt-2 text-sm text-gray-700">{version.change_notes}</p>

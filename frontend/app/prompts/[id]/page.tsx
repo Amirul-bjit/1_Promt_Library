@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { Prompt, Execution } from "@/types";
 import VariableChipEditor from "@/components/prompts/VariableChipEditor";
-import { formatDistanceToNow } from "date-fns";
+import { safeFormatDistanceToNow } from "@/lib/dateUtils";
 
 export default function PromptDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -138,13 +138,10 @@ export default function PromptDetailPage({ params }: { params: Promise<{ id: str
                           <span className="text-gray-600">{execution.model}</span>
                         </div>
                         <div className="mt-1 text-xs text-gray-500">
-                          {(() => {
-                            const ts = (execution as any).executed_at ?? (execution as any).created_at;
-                            if (!ts) return "Unknown time";
-                            const d = new Date(ts);
-                            return isNaN(d.getTime()) ? "Unknown time" : formatDistanceToNow(d, { addSuffix: true });
-                          })()}
-                        </div>
+                          {safeFormatDistanceToNow(
+                            (execution as any).executed_at ?? (execution as any).created_at,
+                            "Unknown time"
+                          )}
                       </div>
                       {execution.cost && (
                         <div className="text-sm font-medium text-gray-900">
@@ -210,7 +207,7 @@ export default function PromptDetailPage({ params }: { params: Promise<{ id: str
                 <div>
                   <dt className="text-xs font-medium text-gray-500">Last Updated</dt>
                   <dd className="mt-1 text-sm text-gray-900">
-                    {formatDistanceToNow(new Date(prompt.updated_at), { addSuffix: true })}
+                    {safeFormatDistanceToNow(prompt.updated_at)}
                   </dd>
                 </div>
               </dl>
