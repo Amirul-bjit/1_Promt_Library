@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeftIcon, PlayIcon, PencilIcon, DocumentDuplicateIcon, ClockIcon, ChartBarIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PlayIcon, PencilIcon, DocumentDuplicateIcon, ClockIcon, ChartBarIcon, BeakerIcon } from "@heroicons/react/24/outline";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { Prompt, Execution } from "@/types";
@@ -65,6 +65,13 @@ export default function PromptDetailPage({ params }: { params: Promise<{ id: str
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => router.push(`/prompts/${promptId}/ab-test`)}
+                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                <BeakerIcon className="mr-2 h-5 w-5" />
+                A/B Test
+              </button>
               <button
                 onClick={() => router.push(`/prompts/${promptId}/run`)}
                 className="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
@@ -142,6 +149,7 @@ export default function PromptDetailPage({ params }: { params: Promise<{ id: str
                             (execution as any).executed_at ?? (execution as any).created_at,
                             "Unknown time"
                           )}
+                        </div>
                       </div>
                       {execution.cost && (
                         <div className="text-sm font-medium text-gray-900">

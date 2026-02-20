@@ -8,6 +8,7 @@ import api from "@/lib/api";
 import { Prompt, Execution } from "@/types";
 import ProviderModelSelector from "@/components/execution/ProviderModelSelector";
 import FeedbackWidget from "@/components/execution/FeedbackWidget";
+import MarkdownRenderer from "@/components/shared/MarkdownRenderer";
 
 export default function RunPromptPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -29,10 +30,7 @@ export default function RunPromptPage({ params }: { params: Promise<{ id: string
   });
 
   // Extract variables live from the prompt body so we always see all {{variable}} placeholders
-  const promptBody =
-    (prompt?.current_version_data as any)?.body ??
-    (prompt?.current_version_data as any)?.content ??
-    "";
+  const promptBody = prompt?.current_version_data?.content ?? "";
   const extractedVariables: string[] = promptBody
     ? Array.from(new Set([...promptBody.matchAll(/\{\{([^}]+)\}\}/g)].map((m: RegExpMatchArray) => m[1].trim())))
     : [];
@@ -188,8 +186,8 @@ export default function RunPromptPage({ params }: { params: Promise<{ id: string
 
                   {execution.status === "COMPLETED" && (
                     <>
-                      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 whitespace-pre-wrap text-sm text-gray-900">
-                        {execution.response}
+                      <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        <MarkdownRenderer content={execution.response} />
                       </div>
 
                       <div className="grid grid-cols-3 gap-4 text-center">

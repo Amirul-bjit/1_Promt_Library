@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { Execution } from "@/types";
 import FeedbackWidget from "@/components/execution/FeedbackWidget";
+import MarkdownRenderer from "@/components/shared/MarkdownRenderer";
 
 export default function ExecutionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -98,9 +99,7 @@ export default function ExecutionDetailPage({ params }: { params: Promise<{ id: 
             <div className="rounded-lg bg-white p-6 shadow">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Response</h2>
               {execution.status === "COMPLETED" ? (
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm whitespace-pre-wrap">
-                  {execution.response}
-                </div>
+                <MarkdownRenderer content={execution.response} />
               ) : execution.status === "FAILED" ? (
                 <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                   {execution.error_message || "An error occurred"}

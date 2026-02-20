@@ -45,11 +45,13 @@ class PromptVariantSerializer(serializers.ModelSerializer):
 class PromptVersionSerializer(serializers.ModelSerializer):
     created_by_username = serializers.CharField(source='created_by.username', read_only=True)
     variants = PromptVariantSerializer(many=True, read_only=True)
+    content = serializers.CharField(source='body')
+    change_notes = serializers.CharField(source='change_note', allow_blank=True, required=False)
 
     class Meta:
         model = PromptVersion
         fields = [
-            'id', 'version_number', 'body', 'variables', 'change_note',
+            'id', 'version_number', 'content', 'variables', 'change_notes',
             'created_by', 'created_by_username', 'created_at', 'variants'
         ]
         read_only_fields = ['id', 'version_number', 'created_at']

@@ -35,7 +35,7 @@ export default function EditPromptPage({ params }: { params: Promise<{ id: strin
   // Populate form once prompt loads
   useEffect(() => {
     if (!prompt) return;
-    const body = (prompt.current_version_data as any)?.body ?? (prompt.current_version_data as any)?.content ?? "";
+    const body = prompt.current_version_data?.content ?? "";
     const tagNames = (prompt as any).tags_data
       ? (prompt as any).tags_data.map((t: any) => t.name).join(", ")
       : Array.isArray(prompt.tags) ? prompt.tags.join(", ") : "";

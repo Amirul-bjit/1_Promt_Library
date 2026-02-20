@@ -87,6 +87,16 @@ class PromptTemplateViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(template)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'])
+    def versions(self, request, pk=None):
+        """
+        List all versions for a template, newest first.
+        """
+        template = self.get_object()
+        versions = template.versions.order_by('-version_number')
+        serializer = PromptVersionSerializer(versions, many=True)
+        return Response(serializer.data)
+
     @action(detail=False, methods=['get'], url_path='export')
     def export(self, request):
         """Export all templates belonging to the current user as JSON."""
@@ -200,6 +210,27 @@ class PromptVersionViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+    @action(detail=True, methods=['post'])
+    def restore(self, request, pk=None):
+        """
+        Restore this version by creating a new version with the same body.
+        The new version becomes the latest (current) version.
+        """
+        version = self.get_object()
+        template = version.template
+        last = template.versions.order_by('-version_number').first()
+        new_version_number = (last.version_number + 1) if last else 1
+        new_version = PromptVersion.objects.create(
+            template=template,
+            version_number=new_version_number,
+            body=version.body,
+            variables=version.variables,
+            change_note=f'Restored from v{version.version_number}',
+            created_by=request.user,
+        )
+        serializer = PromptVersionSerializer(new_version)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class PromptVariantViewSet(viewsets.ModelViewSet):

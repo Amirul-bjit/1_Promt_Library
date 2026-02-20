@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "katex/dist/katex.min.css";
+import "highlight.js/styles/github.css";
 import { Providers } from "./providers";
 import AuthenticatedLayout from "@/components/layout/AuthenticatedLayout";
 
