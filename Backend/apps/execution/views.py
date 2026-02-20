@@ -14,6 +14,19 @@ from .serializers import ExecutionSerializer, ExecutionFeedbackSerializer
 from apps.prompts.models import PromptTemplate, PromptVersion
 
 
+# System prompt injected into every execution to enforce consistent markdown/math output
+FORMAT_SYSTEM_PROMPT = (
+    "You are a helpful assistant. Always respond using well-structured Markdown.\n"
+    "MATH FORMATTING RULES (strictly follow these):\n"
+    "- Display/block equations: wrap in $$ on their own lines, e.g.:\n"
+    "  $$\n  E = mc^2\n  $$\n"
+    "- Inline equations: wrap in single $, e.g. The velocity $v = d/t$.\n"
+    "- Never use \\( \\) or \\[ \\] delimiters.\n"
+    "- Never output bare LaTeX without delimiters.\n"
+    "CODE FORMATTING RULES:\n"
+    "- Wrap all code snippets in fenced code blocks with the language identifier."
+)
+
 PROVIDER_DEFAULTS = {
     "OPENAI": {"name": "OpenAI", "model": "gpt-4o-mini", "env_key": "OPENAI_API_KEY"},
     "ANTHROPIC": {"name": "Anthropic", "model": "claude-3-haiku-20240307", "env_key": "ANTHROPIC_API_KEY"},
@@ -91,7 +104,10 @@ class ExecutionViewSet(viewsets.ModelViewSet):
                 client = OpenAI(api_key=api_key)
                 resp = client.chat.completions.create(
                     model=model_name,
-                    messages=[{'role': 'user', 'content': rendered}],
+                    messages=[
+                        {'role': 'system', 'content': FORMAT_SYSTEM_PROMPT},
+                        {'role': 'user', 'content': rendered},
+                    ],
                 )
                 output = resp.choices[0].message.content
                 prompt_tokens = resp.usage.prompt_tokens
@@ -104,6 +120,7 @@ class ExecutionViewSet(viewsets.ModelViewSet):
                 resp = client.messages.create(
                     model=model_name,
                     max_tokens=2048,
+                    system=FORMAT_SYSTEM_PROMPT,
                     messages=[{'role': 'user', 'content': rendered}],
                 )
                 output = resp.content[0].text
@@ -116,7 +133,10 @@ class ExecutionViewSet(viewsets.ModelViewSet):
                 client = Mistral(api_key=api_key)
                 resp = client.chat.complete(
                     model=model_name,
-                    messages=[{'role': 'user', 'content': rendered}],
+                    messages=[
+                        {'role': 'system', 'content': FORMAT_SYSTEM_PROMPT},
+                        {'role': 'user', 'content': rendered},
+                    ],
                 )
                 output = resp.choices[0].message.content
                 prompt_tokens = resp.usage.prompt_tokens

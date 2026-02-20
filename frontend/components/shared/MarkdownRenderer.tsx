@@ -20,7 +20,14 @@ function normalizeMathDelimiters(text: string): string {
     // Display math: \[...\] → $$...$$
     .replace(/\\\[\s*([\s\S]*?)\s*\\\]/g, (_match, eq) => `$$\n${eq.trim()}\n$$`)
     // Inline math: \(...\) → $...$
-    .replace(/\\\(\s*([\s\S]*?)\s*\\\)/g, (_match, eq) => `$${eq.trim()}$`);
+    .replace(/\\\(\s*([\s\S]*?)\s*\\\)/g, (_match, eq) => `$${eq.trim()}$`)
+    // Bare display math lines: lines containing a LaTeX command like \frac{, \sum_, \int, etc.
+    // Must contain \command{ or \command_ or \command^ to be considered LaTeX.
+    // Skips lines already wrapped in $ or inside code fences.
+    .replace(
+      /^((?!\$)(?!```).*\\(?:frac|sum|int|prod|sqrt|text|mathrm|mathbf|left|right|begin|end|over|partial|infty|lim|log|sin|cos|tan|exp|cdot|times|div|pm|leq|geq|neq|approx|equiv|in|subset|cup|cap|forall|exists|nabla|Delta|Sigma|Pi|alpha|beta|gamma|delta|theta|lambda|mu|pi|sigma|tau|omega)[^\n]*)$/gm,
+      (_match, eq) => `$$\n${eq.trim()}\n$$`
+    );
 }
 
 export default function MarkdownRenderer({ content, className }: MarkdownRendererProps) {
